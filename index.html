@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT発掘スロット ⛏️</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="stage">
+
+  <header class="header">
+    <div class="spotlight"></div>
+    <div class="lamp-row" id="lampRow">
+      <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
+      <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
+      <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
+    </div>
+    <h1 class="title"><span class="pick">⛏️</span> IT発掘スロット <span class="pick flip">⛏️</span></h1>
+    <p class="subtitle">ボタンを押して、地層に埋もれたITツールを掘り当てろ！</p>
+    <div class="gem-row">
+      <span class="gem">💎</span><span class="gem">🪙</span><span class="gem">💎</span>
+    </div>
+  </header>
+
+  <main class="machine" id="machine">
+    <div class="bulbs" id="bulbs"></div>
+
+    <div class="lever" id="lever">
+      <div class="lever-arm"></div>
+      <div class="lever-knob"></div>
+      <div class="lever-base"></div>
+    </div>
+
+    <div class="machine-top">
+      <span class="zukan" id="zukan">📖 発掘図鑑 0 / 50</span>
+      <span class="machine-title">IT DIG SLOT <span class="ver">TYPE-50</span></span>
+      <button class="mute-btn" id="muteBtn" title="サウンド切替">🔊</button>
+    </div>
+
+    <div class="reels" id="reels">
+      <div class="reel" data-reel="0">
+        <div class="reel-label">第1鉱脈</div>
+        <div class="window">
+          <div class="strip"></div>
+          <div class="shade top"></div>
+          <div class="shade bottom"></div>
+          <div class="payline"></div>
+          <div class="flash"></div>
+        </div>
+      </div>
+      <div class="reel" data-reel="1">
+        <div class="reel-label">第2鉱脈</div>
+        <div class="window">
+          <div class="strip"></div>
+          <div class="shade top"></div>
+          <div class="shade bottom"></div>
+          <div class="payline"></div>
+          <div class="flash"></div>
+        </div>
+      </div>
+      <div class="reel" data-reel="2">
+        <div class="reel-label">第3鉱脈</div>
+        <div class="window">
+          <div class="strip"></div>
+          <div class="shade top"></div>
+          <div class="shade bottom"></div>
+          <div class="payline"></div>
+          <div class="flash"></div>
+        </div>
+      </div>
+      <div class="callout" id="callout"></div>
+    </div>
+
+    <div class="control">
+      <button class="main-btn" id="mainBtn"><span class="btn-shine"></span><span id="mainBtnText">発掘スタート</span></button>
+      <p class="hint" id="hint">スペースキーでもストップできます</p>
+    </div>
+  </main>
+
+  <section class="result hidden" id="result">
+    <div class="rays"></div>
+    <h2 class="result-title" id="resultTitle">🎉 発掘結果 🎉</h2>
+    <p class="result-note">※このスロットは絶対に揃いません。全部ちがうから面白い。</p>
+    <div class="result-cards" id="resultCards"></div>
+    <div class="synergy" id="synergy"></div>
+  </section>
+
+  <div class="ticker">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <footer class="footer">IT DIG SLOT — 揃わないことに価値がある。</footer>
+</div>
+
+<div class="cutin" id="cutin">
+  <div class="cutin-band"><span class="cutin-text" id="cutinText"></span></div>
+</div>
+<div id="screenFlash"></div>
+
+<canvas id="confetti"></canvas>
+
+<script src="script.js"></script>
+</body>
+</html>
