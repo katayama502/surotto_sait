@@ -1,0 +1,23 @@
+# 効果音素材について
+
+すべて Kenney (kenney.nl) の CC0 (パブリックドメイン) 素材です。
+ミラーサイト gamesounds.xyz の「Kenney's Sound Pack」から取得しました。
+帰属表示不要・商用利用可。
+
+| ファイル | 元ファイル | パック |
+|----------|-----------|--------|
+| start.ogg | powerUp5.ogg | Digital Audio |
+| lever.ogg | impactWood_medium_000.ogg | Impact Sounds |
+| stop1.ogg | impactMining_000.ogg | Impact Sounds |
+| stop2.ogg | impactMining_001.ogg | Impact Sounds |
+| stop3.ogg | impactMining_003.ogg | Impact Sounds |
+| slam.ogg | impactMetal_heavy_004.ogg | Impact Sounds |
+| bell.ogg | impactBell_heavy_000.ogg | Impact Sounds |
+| cutin.ogg | phaserUp5.ogg | Digital Audio |
+| coin.ogg | chipsCollide2.ogg | Casino Audio |
+| coins2.ogg | chipsHandle6.ogg | Casino Audio |
+| fanfare.ogg | jingles-retro_00.ogg | Music Jingles (Retro) |
+| bigwin.ogg | jingles-retro_05.ogg | Music Jingles (Retro) |
+
+- Kenney: https://kenney.nl/assets
+- License: Creative Commons Zero (CC0)

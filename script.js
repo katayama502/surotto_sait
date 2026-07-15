@@ -81,6 +81,7 @@ const LAST_CALLOUTS = {
   slam:    "一撃ズドン!!",
   jirashi: "じらしからの…発掘!!",
   reverse: "まさかの逆回転!!",
+  rainbow: "大発掘ィィィ!!",
 };
 const SYNERGY_COMMENTS = [
   "この3つでスタートアップが1社できます。",
@@ -140,6 +141,65 @@ const sndCutin = () => {
   o.stop(t + 0.55);
 };
 const sndLever = () => { beep(300, .06, "square", .08); beep(180, .1, "square", .08, .07); };
+
+/* ---------- 外部効果音（Kenney / CC0）。読み込み失敗時はシンセ音にフォールバック ---------- */
+const SFX_NAMES = ["start", "lever", "stop1", "stop2", "stop3", "slam", "bell", "cutin", "coin", "coins2", "fanfare", "bigwin"];
+const sfx = {};
+for (const n of SFX_NAMES) {
+  const a = new Audio(`assets/audio/${n}.ogg`);
+  a.preload = "auto";
+  a.addEventListener("error", () => { a.failed = true; });
+  sfx[n] = a;
+}
+const SFX_FALLBACK = {
+  start: sndStart, lever: sndLever,
+  stop1: sndStop, stop2: sndStop, stop3: sndStop, slam: sndStop,
+  cutin: sndCutin, fanfare: sndFanfare, bigwin: sndFanfare,
+};
+function playSfx(name, vol = 0.7) {
+  if (muted) return;
+  const base = sfx[name];
+  if (!base || base.failed) {
+    if (SFX_FALLBACK[name]) SFX_FALLBACK[name]();
+    return;
+  }
+  const a = base.cloneNode();
+  a.volume = vol;
+  a.play().catch(() => {});
+}
+
+/* 回転中のウィーン音（ノイズ＋バンドパス、外部ファイル不要のループ） */
+let whirNodes = null;
+function startWhir() {
+  if (!audioCtx || whirNodes) return;
+  const len = audioCtx.sampleRate * 1.5;
+  const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+  src.loop = true;
+  const bp = audioCtx.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.value = 620;
+  bp.Q.value = 2.5;
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = 11;
+  lfoGain.gain.value = 180;
+  lfo.connect(lfoGain).connect(bp.frequency);
+  const g = audioCtx.createGain();
+  g.gain.value = muted ? 0 : 0.035;
+  src.connect(bp).connect(g).connect(audioCtx.destination);
+  src.start();
+  lfo.start();
+  whirNodes = { src, lfo, g };
+}
+function stopWhir() {
+  if (!whirNodes) return;
+  try { whirNodes.src.stop(); whirNodes.lfo.stop(); } catch (e) { /* 停止済みなら無視 */ }
+  whirNodes = null;
+}
 
 /* ---------- ユーティリティ ---------- */
 const shuffle = (arr) => {
@@ -338,6 +398,20 @@ function rainConfetti() {
     burstConfetti(Math.random() * innerWidth, -20, 4, 3);
   }
 }
+function rainCoins(n = 2) {
+  for (let i = 0; i < n; i++) {
+    confettiParts.push({
+      x: Math.random() * innerWidth, y: -30,
+      vx: (Math.random() - .5) * 1.5,
+      vy: 1 + Math.random() * 2,
+      rot: Math.random() * Math.PI,
+      vr: (Math.random() - .5) * .2,
+      char: "🪙",
+      size: 16 + Math.random() * 18,
+      life: 1,
+    });
+  }
+}
 function updateConfetti() {
   cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
   confettiParts = confettiParts.filter((p) => p.life > 0 && p.y < innerHeight + 40);
@@ -472,7 +546,7 @@ const cutinEl = document.getElementById("cutin");
 const cutinText = document.getElementById("cutinText");
 let cutinTimer = null;
 function showCutin(text, color = "") {
-  sndCutin();
+  playSfx("cutin", .6);
   cutinText.textContent = text;
   cutinEl.className = "cutin"; // 色クラスをリセット
   void cutinEl.offsetWidth;
@@ -480,6 +554,209 @@ function showCutin(text, color = "") {
   cutinEl.classList.add("go");
   clearTimeout(cutinTimer);
   cutinTimer = setTimeout(() => cutinEl.classList.remove("go"), 1200);
+}
+
+/* ---------- 発掘ムービー（canvas製カットシーン） ---------- */
+const movieEl = document.getElementById("movie");
+const movieCanvas = document.getElementById("movieCanvas");
+const movieCaption = document.getElementById("movieCaption");
+const mctx = movieCanvas.getContext("2d");
+const MW = 640, MH = 360;
+let movie = null;
+let moviePlaying = false;
+
+function playMovie(kind, dur, onDone) {
+  moviePlaying = true;
+  const seeds = [];
+  for (let i = 0; i < 60; i++) seeds.push(Math.random());
+  movie = { kind, dur, onDone, t0: performance.now(), seeds, hitsDone: 0 };
+  movieCaption.textContent =
+    kind === "drill" ? "掘削中……地中に何かの気配……!!" : "流星接近……超発掘チャンス!?";
+  movieEl.classList.add("go");
+  playSfx("cutin", .7);
+}
+
+function updateMovie(now) {
+  if (!movie) return;
+  const t = (now - movie.t0) / movie.dur;
+  if (t >= 1) {
+    movieEl.classList.remove("go");
+    const cb = movie.onDone;
+    movie = null;
+    moviePlaying = false;
+    if (cb) cb();
+    return;
+  }
+  if (movie.kind === "drill") drawDrillMovie(t, now);
+  else drawMeteorMovie(t, now);
+}
+
+/* 掘削ムービー：岩盤を掘り進む→ダイヤ出現 */
+function drawDrillMovie(t, now) {
+  const s = movie.seeds;
+  mctx.save();
+  if (t < 0.72) mctx.translate((Math.random() - .5) * 8, (Math.random() - .5) * 8);
+
+  const grad = mctx.createRadialGradient(MW / 2, MH / 2, 40, MW / 2, MH / 2, 400);
+  grad.addColorStop(0, "#3a2a18");
+  grad.addColorStop(1, "#0b0704");
+  mctx.fillStyle = grad;
+  mctx.fillRect(-10, -10, MW + 20, MH + 20);
+
+  // 放射スピードライン
+  mctx.strokeStyle = "rgba(255, 200, 120, .35)";
+  for (let i = 0; i < 26; i++) {
+    const ang = (i / 26) * Math.PI * 2 + now / 900;
+    const r1 = 60 + s[i % 60] * 40;
+    mctx.lineWidth = 1 + s[i % 60] * 2;
+    mctx.beginPath();
+    mctx.moveTo(MW / 2 + Math.cos(ang) * r1, MH / 2 + Math.sin(ang) * r1);
+    mctx.lineTo(MW / 2 + Math.cos(ang) * 420, MH / 2 + Math.sin(ang) * 420);
+    mctx.stroke();
+  }
+
+  // 飛んでくる岩
+  mctx.textAlign = "center";
+  mctx.textBaseline = "middle";
+  for (let i = 0; i < 14; i++) {
+    const p = (t * (0.8 + s[i] * 1.6) + s[i + 20]) % 1;
+    const ang = s[i + 40] * Math.PI * 2;
+    const r = 30 + p * 420;
+    mctx.font = `${8 + p * 60}px serif`;
+    mctx.globalAlpha = Math.min(1, p * 3);
+    mctx.fillText("🪨", MW / 2 + Math.cos(ang) * r, MH / 2 + Math.sin(ang) * r);
+  }
+  mctx.globalAlpha = 1;
+
+  // 中央のツルハシ（打撃モーション＋打撃音）
+  const swing = Math.sin(now / 70) * 0.5;
+  mctx.save();
+  mctx.translate(MW / 2, MH / 2);
+  mctx.rotate(swing);
+  mctx.font = "96px serif";
+  mctx.fillText("⛏️", 0, 0);
+  mctx.restore();
+  const hitIdx = Math.floor(t * 6);
+  if (hitIdx > movie.hitsDone && t < 0.7) {
+    movie.hitsDone = hitIdx;
+    playSfx(`stop${(hitIdx % 3) + 1}`, .5);
+  }
+
+  // 火花
+  if (t < 0.72) {
+    mctx.strokeStyle = "rgba(255, 240, 150, .9)";
+    mctx.lineWidth = 2;
+    for (let i = 0; i < 8; i++) {
+      const ang = (now / 40 + i * 0.8) % (Math.PI * 2);
+      const len = 20 + ((now / 6 + i * 37) % 40);
+      mctx.beginPath();
+      mctx.moveTo(MW / 2, MH / 2);
+      mctx.lineTo(MW / 2 + Math.cos(ang) * len, MH / 2 + Math.sin(ang) * len);
+      mctx.stroke();
+    }
+  }
+
+  // クライマックス：フラッシュ→ダイヤ出現
+  if (t >= 0.72) {
+    const ft = (t - 0.72) / 0.28;
+    if (ft < 0.3) {
+      mctx.fillStyle = `rgba(255,255,255,${1 - ft / 0.3})`;
+      mctx.fillRect(-10, -10, MW + 20, MH + 20);
+    }
+    mctx.save();
+    mctx.translate(MW / 2, MH / 2);
+    mctx.rotate(now / 1400);
+    mctx.fillStyle = "rgba(255, 213, 74, .25)";
+    for (let i = 0; i < 12; i++) {
+      mctx.rotate(Math.PI / 6);
+      mctx.beginPath();
+      mctx.moveTo(0, 0);
+      mctx.lineTo(300, -26);
+      mctx.lineTo(300, 26);
+      mctx.closePath();
+      mctx.fill();
+    }
+    mctx.restore();
+    const scale = 3 - Math.min(1, ft * 1.6) * 1.9;
+    mctx.font = `${90 * scale}px serif`;
+    mctx.globalAlpha = Math.min(1, ft * 2);
+    mctx.fillText("💎", MW / 2, MH / 2);
+    mctx.globalAlpha = 1;
+    mctx.fillStyle = "#ffd54a";
+    mctx.font = "900 34px sans-serif";
+    mctx.fillText("激アツ確定!?", MW / 2, MH - 40);
+  }
+  mctx.restore();
+}
+
+/* 流星ムービー：彗星が横切り宝の雨が降る */
+function drawMeteorMovie(t, now) {
+  const s = movie.seeds;
+  const grad = mctx.createLinearGradient(0, 0, 0, MH);
+  grad.addColorStop(0, "#05041a");
+  grad.addColorStop(1, "#1a0f36");
+  mctx.fillStyle = grad;
+  mctx.fillRect(0, 0, MW, MH);
+
+  for (let i = 0; i < 50; i++) {
+    mctx.globalAlpha = 0.3 + 0.7 * ((Math.sin(now / 300 + i) + 1) / 2) * s[i % 60];
+    mctx.fillStyle = "#dfe6ff";
+    mctx.fillRect(s[i % 60] * MW, s[(i + 17) % 60] * MH * 0.9, 2, 2);
+  }
+  mctx.globalAlpha = 1;
+  mctx.textAlign = "center";
+  mctx.textBaseline = "middle";
+
+  const ex = MW * 0.62, ey = MH * 0.5;
+  if (t < 0.5) {
+    const p = t / 0.5;
+    const cx = -60 + (ex + 60) * p;
+    const cy = 40 + (ey - 40) * p;
+    for (let i = 0; i < 14; i++) {
+      const q = i / 14;
+      mctx.globalAlpha = (1 - q) * 0.5;
+      mctx.fillStyle = "#8fe3ff";
+      mctx.beginPath();
+      mctx.arc(cx - i * 26 * (1 - p * .3), cy - i * 14 * (1 - p * .3), 16 * (1 - q) + 2, 0, Math.PI * 2);
+      mctx.fill();
+    }
+    mctx.globalAlpha = 1;
+    mctx.font = "54px serif";
+    mctx.fillText("☄️", cx, cy);
+  } else {
+    const p = (t - 0.5) / 0.5;
+    if (p < 0.25) {
+      mctx.fillStyle = `rgba(255,255,255,${1 - p / 0.25})`;
+      mctx.fillRect(0, 0, MW, MH);
+    }
+    for (let i = 0; i < 30; i++) {
+      const ang = s[i] * Math.PI * 2;
+      const r = p * (80 + s[i + 30] * 260);
+      mctx.globalAlpha = Math.max(0, 1 - p * 1.2);
+      mctx.font = `${10 + s[i + 30] * 26}px serif`;
+      mctx.fillText(["💎", "🪙", "✨"][i % 3], ex + Math.cos(ang) * r, ey + Math.sin(ang) * r);
+    }
+    mctx.globalAlpha = 1;
+    mctx.fillStyle = "#6ef3ff";
+    mctx.font = "900 34px sans-serif";
+    mctx.fillText("超発掘チャンス!!", MW / 2, MH - 40);
+  }
+}
+
+/* ---------- 発掘ズームカード（停止したツールのアップ表示） ---------- */
+const zoomCard = document.getElementById("zoomCard");
+const zcIcon = document.getElementById("zcIcon");
+const zcName = document.getElementById("zcName");
+const zcCat = document.getElementById("zcCat");
+function showZoomCard(tool) {
+  const c = CATS[tool.cat];
+  zcIcon.textContent = tool.icon;
+  zcName.textContent = tool.name;
+  zcCat.textContent = c.label;
+  zcCat.style.background = c.color;
+  zoomCard.classList.remove("pop");
+  void zoomCard.offsetWidth;
+  zoomCard.classList.add("pop");
 }
 
 /* ---------- 全画面フラッシュ / 衝撃波 ---------- */
@@ -508,9 +785,10 @@ function buildTicker() {
 }
 buildTicker();
 
-function showCallout(text, big = false) {
+function showCallout(text, big = false, gold = false) {
   callout.textContent = text;
   callout.classList.remove("pop");
+  callout.classList.toggle("gold", gold);
   void callout.offsetWidth;
   callout.classList.add("pop");
   machine.classList.remove("shake", "bigshake");
@@ -533,8 +811,9 @@ function stopLamps(allOn = false) {
 
 function startGame() {
   ensureAudio();
-  sndLever();
-  sndStart();
+  playSfx("lever", .8);
+  playSfx("start", .7);
+  startWhir();
   phase = "spinning";
   nextStop = 0;
   resultSec.classList.add("hidden");
@@ -553,6 +832,7 @@ function startGame() {
 }
 
 function stopNext() {
+  if (moviePlaying) return; // ムービー中は操作を受け付けない
   if (nextStop >= reels.length) return;
   const reel = reels[nextStop];
   if (reel.mode !== "spin" && reel.mode !== "accel") return; // 停止処理中は無視
@@ -562,43 +842,61 @@ function stopNext() {
   );
 
   const isLast = nextStop === reels.length - 1;
-  let effect = "normal";
-  if (isLast) {
-    const roll = Math.random();
-    effect = roll < 0.34 ? "slam" : roll < 0.67 ? "jirashi" : "reverse";
-    lastEffect = effect;
-    reel.el.classList.add("hot");
-    startLamps(true);
-    if (effect === "slam")    showCutin("激アツ!!", "gold");
-    if (effect === "jirashi") showCutin("まだだ…まだ終わらんよ…");
-    if (effect === "reverse") showCutin("な、なんと逆回転!?", "cyan");
-  } else if (nextStop === 1 && Math.random() < 0.3) {
+  nextStop++;
+
+  if (!isLast) {
     // 2番目のリールでもたまにチャンス煽り
-    showCutin("チャンス!?", "gold");
+    if (nextStop === 2 && Math.random() < 0.3) showCutin("チャンス!?", "gold");
+    reel.onLanded = (r) => onReelLanded(r, false);
+    reel.planStop(forbidden, "normal");
+    return;
   }
 
-  reel.onLanded = (r) => onReelLanded(r, isLast);
+  // 最終リール：4種の演出から抽選
+  const roll = Math.random();
+  const effect = roll < 0.25 ? "slam" : roll < 0.5 ? "jirashi" : roll < 0.75 ? "reverse" : "rainbow";
+  lastEffect = effect;
+  reel.el.classList.add("hot");
+  startLamps(true);
+  reel.onLanded = (r) => onReelLanded(r, true);
+
+  if (effect === "rainbow") {
+    // プレミア：発掘ムービーが流れてからのスラム停止
+    const kind = Math.random() < 0.5 ? "drill" : "meteor";
+    playMovie(kind, 2800, () => {
+      playSfx("bell", .8);
+      reel.planStop(forbidden, "slam");
+    });
+    return;
+  }
+  if (effect === "slam")    showCutin("激アツ!!", "gold");
+  if (effect === "jirashi") showCutin("まだだ…まだ終わらんよ…");
+  if (effect === "reverse") showCutin("な、なんと逆回転!?", "cyan");
   reel.planStop(forbidden, effect);
-  nextStop++;
 }
 
 function onReelLanded(reel, isLast) {
-  sndStop();
+  if (isLast) playSfx("slam", .9);
+  else playSfx(`stop${(reel.index % 3) + 1}`, .85);
   reel.flash();
   reel.el.classList.add("landed");
   shockwave(reel.el);
   const rect = reel.el.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
-  burstConfetti(cx, cy, isLast ? 90 : 30);
-  burstEmoji(cx, cy, isLast ? 18 : 8);
+  const mega = lastEffect === "rainbow" && isLast;
+  burstConfetti(cx, cy, mega ? 150 : isLast ? 90 : 30);
+  burstEmoji(cx, cy, mega ? 30 : isLast ? 18 : 8);
 
   if (!isLast) {
     showCallout(CALLOUTS[Math.floor(Math.random() * CALLOUTS.length)]);
+    setTimeout(() => showZoomCard(reel.resultTool), 140);
   } else {
     reel.el.classList.remove("hot");
     flashScreen();
-    showCallout(LAST_CALLOUTS[lastEffect] || "発掘完了!!", true);
+    if (mega) playSfx("bell", .9);
+    showCallout(LAST_CALLOUTS[lastEffect] || "発掘完了!!", true, mega);
+    setTimeout(() => showZoomCard(reel.resultTool), 700);
     finishGame();
   }
 }
@@ -606,16 +904,22 @@ function onReelLanded(reel, isLast) {
 function finishGame() {
   phase = "done";
   stopLamps(true);
-  sndFanfare();
+  stopWhir();
+  playSfx(lastEffect === "rainbow" ? "bigwin" : "fanfare", .8);
+  [200, 480, 760].forEach((d, i) =>
+    setTimeout(() => playSfx(i % 2 ? "coins2" : "coin", .75), d)
+  );
   machine.classList.remove("spinning");
   machine.classList.add("bigshake");
   mainBtn.classList.remove("stop-mode");
   mainBtnText.textContent = "もう一回掘る";
 
+  const mega = lastEffect === "rainbow";
   let rains = 0;
   const rainInt = setInterval(() => {
     rainConfetti();
-    if (++rains > 60) clearInterval(rainInt);
+    rainCoins(mega ? 4 : 2);
+    if (++rains > (mega ? 110 : 60)) clearInterval(rainInt);
   }, 50);
 
   setTimeout(showResult, 700);
@@ -672,6 +976,7 @@ function showResult() {
     scoreEl.textContent = `${v}点`;
     if (t < 1) requestAnimationFrame(tick);
     else {
+      playSfx("coin", .7);
       const r = resultSec.getBoundingClientRect();
       burstConfetti(r.left + r.width / 2, r.top + 80, 50);
       burstEmoji(r.left + r.width / 2, r.top + 80, 12);
@@ -685,6 +990,7 @@ function showResult() {
 /* ---------- 入力 ---------- */
 mainBtn.addEventListener("click", () => {
   ensureAudio();
+  if (moviePlaying) return;
   if (phase === "idle" || phase === "done") startGame();
   else if (phase === "spinning") stopNext();
 });
@@ -699,6 +1005,7 @@ document.addEventListener("keydown", (e) => {
 document.getElementById("muteBtn").addEventListener("click", (e) => {
   muted = !muted;
   e.currentTarget.textContent = muted ? "🔇" : "🔊";
+  if (whirNodes) whirNodes.g.gain.value = muted ? 0 : 0.035;
 });
 
 /* ---------- メインループ ---------- */
@@ -711,6 +1018,7 @@ function loop(now) {
   }
   updateConfetti();
   updateBg(now);
+  updateMovie(now);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
