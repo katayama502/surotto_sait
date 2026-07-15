@@ -565,15 +565,57 @@ const MW = 640, MH = 360;
 let movie = null;
 let moviePlaying = false;
 
+/* ユーザー提供の実写ムービー（assets/video/）。再生できない場合はcanvas版に自動フォールバック */
+const movieVideo = document.getElementById("movieVideo");
+const MOVIE_SRC = {
+  drill: "assets/video/掘削ムービー.mp4",
+  meteor: "assets/video/流星ムービー.mp4",
+};
+
 function playMovie(kind, dur, onDone) {
   moviePlaying = true;
-  const seeds = [];
-  for (let i = 0; i < 60; i++) seeds.push(Math.random());
-  movie = { kind, dur, onDone, t0: performance.now(), seeds, hitsDone: 0 };
   movieCaption.textContent =
     kind === "drill" ? "掘削中……地中に何かの気配……!!" : "流星接近……超発掘チャンス!?";
   movieEl.classList.add("go");
   playSfx("cutin", .7);
+
+  let settled = false;
+  let safety = null;
+  const cleanupVideo = () => {
+    movieVideo.onended = movieVideo.onerror = null;
+    clearTimeout(safety);
+    movieVideo.pause();
+  };
+  const finish = () => {
+    if (settled) return;
+    settled = true;
+    cleanupVideo();
+    movieVideo.style.display = "none";
+    movieEl.classList.remove("go");
+    moviePlaying = false;
+    if (onDone) onDone();
+  };
+  const fallbackToCanvas = () => {
+    if (settled) return;
+    settled = true;
+    cleanupVideo();
+    movieVideo.style.display = "none";
+    movieCanvas.style.display = "block";
+    const seeds = [];
+    for (let i = 0; i < 60; i++) seeds.push(Math.random());
+    movie = { kind, dur, onDone, t0: performance.now(), seeds, hitsDone: 0 };
+  };
+
+  movieCanvas.style.display = "none";
+  movieVideo.style.display = "block";
+  movieVideo.src = MOVIE_SRC[kind];
+  movieVideo.muted = muted;
+  movieVideo.volume = 0.9;
+  movieVideo.currentTime = 0;
+  movieVideo.onended = finish;
+  movieVideo.onerror = fallbackToCanvas;
+  safety = setTimeout(finish, 13000); // 動画が固まった場合の保険（本編10秒）
+  movieVideo.play().catch(fallbackToCanvas);
 }
 
 function updateMovie(now) {
@@ -1006,6 +1048,7 @@ document.getElementById("muteBtn").addEventListener("click", (e) => {
   muted = !muted;
   e.currentTarget.textContent = muted ? "🔇" : "🔊";
   if (whirNodes) whirNodes.g.gain.value = muted ? 0 : 0.035;
+  movieVideo.muted = muted;
 });
 
 /* ---------- メインループ ---------- */

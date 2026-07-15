@@ -21,3 +21,9 @@
 
 - Kenney: https://kenney.nl/assets
 - License: Creative Commons Zero (CC0)
+
+# 演出ムービーについて
+
+`assets/video/` の「掘削ムービー.mp4」「流星ムービー.mp4」はユーザー制作の素材。
+レインボー演出時に再生される（再生できない環境ではcanvas製アニメーションに自動フォールバック）。
+差し替える場合は同じファイル名で `assets/video/` に上書きすればよい。

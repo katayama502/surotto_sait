@@ -711,12 +711,14 @@ body::after {
   animation: framezoom .4s cubic-bezier(.2, 1.4, .4, 1);
 }
 @keyframes framezoom { from { transform: scale(.75); } to { transform: scale(1); } }
-#movieCanvas {
+#movieCanvas,
+#movieVideo {
   display: block;
   width: min(88vw, 680px);
   height: auto;
   background: #000;
 }
+#movieVideo { display: none; aspect-ratio: 16 / 9; object-fit: cover; }
 .movie-label {
   position: absolute; top: -44px; left: 2px;
   color: var(--gold); font-size: .72rem; font-weight: 800;
