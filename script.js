@@ -22,71 +22,222 @@ const CATS = {
 const IMG_DIR = "assets/img/";
 const DETAIL_BASE = "https://ittool.creatte.jp/"; // カタログサイト（結果カードのリンク先）
 
+/* easy: 初学者向けの「どんなツール？」解説 / strengths: 得意なこと3点 */
 const TOOLS = [
   // AI (6) — 激レア演出の当たり枠
-  { id: "chatgpt",       name: "ChatGPT",                 icon: "🤖", cat: "AI",                 img: "01_chatgpt.png",           desc: "OpenAIの高性能AIチャット" },
-  { id: "claude",        name: "Claude",                  icon: "🌿", cat: "AI",                 img: "02_claude.png",            desc: "Anthropicの安全性重視AI" },
-  { id: "gemini",        name: "Gemini",                  icon: "♊", cat: "AI",                 img: "03_gemini.png",            desc: "GoogleのマルチモーダルAI" },
-  { id: "notebooklm",    name: "NotebookLM",              icon: "📓", cat: "AI",                 img: "04_notebooklm.png",        desc: "Googleのドキュメント特化AI" },
-  { id: "perplexity",    name: "Perplexity",              icon: "🔎", cat: "AI",                 img: "05_perplexity.png",        desc: "AI搭載のリアルタイム検索エンジン" },
-  { id: "copilot",       name: "Microsoft Copilot",       icon: "🪁", cat: "AI",                 img: "06_microsoft_copilot.png", desc: "Microsoft 365に統合されたAI" },
+  { id: "chatgpt", name: "ChatGPT", icon: "🤖", cat: "AI", img: "01_chatgpt.png",
+    desc: "OpenAIの高性能AIチャット",
+    easy: "質問や頼みごとを日本語で入力すると、AIが文章で答えてくれる会話型アシスタント。メールの下書きから調べものまで何でも相談できます。",
+    strengths: ["文章の作成・要約・翻訳", "プログラムコードの作成支援", "アイデア出しや調べものの相談相手"] },
+  { id: "claude", name: "Claude", icon: "🌿", cat: "AI", img: "02_claude.png",
+    desc: "Anthropicの安全性重視AI",
+    easy: "長い資料を丸ごと読み込んで、要約や分析をしてくれるAIアシスタント。ていねいで安全な回答が得意な、頼れる仕事の相棒です。",
+    strengths: ["長い文書を読み込んで要約・分析", "複雑な内容の整理と筋道立った説明", "安全性に配慮した誠実な回答"] },
+  { id: "gemini", name: "Gemini", icon: "♊", cat: "AI", img: "03_gemini.png",
+    desc: "GoogleのマルチモーダルAI",
+    easy: "Google製のAIアシスタント。文章だけでなく画像や動画も理解でき、GmailやGoogleドキュメントと組み合わせて使えます。",
+    strengths: ["文章・画像・動画をまとめて理解", "Googleの各サービスと連携", "最新情報を検索しながら回答"] },
+  { id: "notebooklm", name: "NotebookLM", icon: "📓", cat: "AI", img: "04_notebooklm.png",
+    desc: "Googleのドキュメント特化AI",
+    easy: "自分がアップロードした資料だけを元に答えてくれるAIノート。社内資料や論文の「専属解説役」を作れるイメージです。",
+    strengths: ["複数の資料をまたいで質問できる", "自動で要約や目次を作成", "出典付きで答えてくれるので安心"] },
+  { id: "perplexity", name: "Perplexity", icon: "🔎", cat: "AI", img: "05_perplexity.png",
+    desc: "AI搭載のリアルタイム検索エンジン",
+    easy: "AIがインターネットを検索して、出典リンク付きで答えをまとめてくれる新しい検索エンジン。「ググる」の進化版です。",
+    strengths: ["最新のWeb情報をAIが要約", "情報の出どころ（URL）を明示", "追加質問でどんどん深掘りできる"] },
+  { id: "copilot", name: "Microsoft Copilot", icon: "🪁", cat: "AI", img: "06_microsoft_copilot.png",
+    desc: "Microsoft 365に統合されたAI",
+    easy: "WordやExcelなどMicrosoftのソフトに組み込まれたAI。資料の下書きや会議メモの要約を自動でこなしてくれます。",
+    strengths: ["Word/Excel/PowerPointの資料をAIが下書き", "Teams会議の内容を自動で要約", "メールの返信案を自動作成"] },
   // コミュニケーション (4)
-  { id: "slack",         name: "Slack",                   icon: "💬", cat: "コミュニケーション", img: "07_slack.png",             desc: "チームのハブとなるビジネスチャット" },
-  { id: "teams",         name: "Microsoft Teams",         icon: "🟦", cat: "コミュニケーション", img: "08_microsoft_teams.png",   desc: "Microsoft 365統合のコラボ基盤" },
-  { id: "chatwork",      name: "Chatwork",                icon: "💭", cat: "コミュニケーション", img: "09_chatwork.png",          desc: "国内シェアNo.1のビジネスチャット" },
-  { id: "lineworks",     name: "LINE WORKS",              icon: "💚", cat: "コミュニケーション", img: "10_line_works.png",        desc: "LINEライクなビジネス版チャット" },
+  { id: "slack", name: "Slack", icon: "💬", cat: "コミュニケーション", img: "07_slack.png",
+    desc: "チームのハブとなるビジネスチャット",
+    easy: "仕事仲間と話題ごとの「チャンネル」で会話できるビジネスチャット。メールより速く、気軽にやり取りできます。",
+    strengths: ["話題ごとに会話を整理できる", "2,000以上の他ツールと連携", "音声通話にもすぐ切り替え"] },
+  { id: "teams", name: "Microsoft Teams", icon: "🟦", cat: "コミュニケーション", img: "08_microsoft_teams.png",
+    desc: "Microsoft 365統合のコラボ基盤",
+    easy: "チャット・ビデオ会議・ファイル共有が1つになったMicrosoftのツール。WordやExcelとの相性が抜群です。",
+    strengths: ["チャットと会議をこれ1つで完結", "Officeファイルをみんなで同時編集", "社外の人も会議に招待できる"] },
+  { id: "chatwork", name: "Chatwork", icon: "💭", cat: "コミュニケーション", img: "09_chatwork.png",
+    desc: "国内シェアNo.1のビジネスチャット",
+    easy: "国産のシンプルなビジネスチャット。ITが苦手な人でも迷わず使える画面が魅力で、中小企業を中心に人気です。",
+    strengths: ["画面がシンプルで覚えやすい", "チャットからそのままタスク管理", "取引先ともつながりやすい"] },
+  { id: "lineworks", name: "LINE WORKS", icon: "💚", cat: "コミュニケーション", img: "10_line_works.png",
+    desc: "LINEライクなビジネス版チャット",
+    easy: "ふだんのLINEと同じ感覚で使える仕事用チャット。スタンプや既読表示もあり、現場スタッフにもなじみやすいです。",
+    strengths: ["LINEと同じ操作感ですぐ使える", "スタンプ・既読確認に対応", "勤怠やアンケート機能も内蔵"] },
   // ビデオ会議 (2)
-  { id: "zoom",          name: "Zoom",                    icon: "📹", cat: "ビデオ会議",         img: "11_zoom.png",              desc: "世界標準のオンライン会議ツール" },
-  { id: "meet",          name: "Google Meet",             icon: "📺", cat: "ビデオ会議",         img: "12_google_meet.png",       desc: "Google Workspace統合のビデオ通話" },
+  { id: "zoom", name: "Zoom", icon: "📹", cat: "ビデオ会議", img: "11_zoom.png",
+    desc: "世界標準のオンライン会議ツール",
+    easy: "離れた場所の人とビデオ通話で会議ができる定番ツール。会議のURLを送るだけで、誰でも簡単に参加してもらえます。",
+    strengths: ["大人数のオンラインイベントに強い", "少人数グループに分かれて話し合える", "AIが議事録・要約を自動作成"] },
+  { id: "meet", name: "Google Meet", icon: "📺", cat: "ビデオ会議", img: "12_google_meet.png",
+    desc: "Google Workspace統合のビデオ通話",
+    easy: "Google製のビデオ会議ツール。アプリを入れなくてもブラウザから参加でき、Googleカレンダーの予定からワンクリックで開けます。",
+    strengths: ["カレンダーの予定からすぐ参加", "ソフトのインストール不要", "自動字幕で聞き逃しを防げる"] },
   // 生産性スイート (2)
-  { id: "gws",           name: "Google Workspace",        icon: "🌐", cat: "生産性スイート",     img: "13_google_workspace.png",  desc: "Google製クラウドビジネスツール群" },
-  { id: "m365",          name: "Microsoft 365",           icon: "🪟", cat: "生産性スイート",     img: "14_microsoft_365.png",     desc: "Word・Excel・PowerPointのクラウド版" },
+  { id: "gws", name: "Google Workspace", icon: "🌐", cat: "生産性スイート", img: "13_google_workspace.png",
+    desc: "Google製クラウドビジネスツール群",
+    easy: "Gmail・カレンダー・ドキュメント・スプレッドシートなど、仕事に必要な道具がまるごとそろったGoogleのセットです。",
+    strengths: ["複数人で同じファイルを同時編集", "ネットがあればどこでも仕事できる", "データはクラウドに自動保存"] },
+  { id: "m365", name: "Microsoft 365", icon: "🪟", cat: "生産性スイート", img: "14_microsoft_365.png",
+    desc: "Word・Excel・PowerPointのクラウド版",
+    easy: "Word・Excel・PowerPointをクラウドで使えるMicrosoftのセット。会社のパソコン仕事の定番がぜんぶ入っています。",
+    strengths: ["おなじみOfficeソフトの最新版が使える", "ファイルをクラウドで一元管理", "AI機能（Copilot）も組み込める"] },
   // ドキュメント管理 (4)
-  { id: "notion",        name: "Notion",                  icon: "📄", cat: "ドキュメント管理",   img: "15_notion.png",            desc: "メモ・Wiki・DB・プロジェクトを一元化" },
-  { id: "dropbox",       name: "Dropbox",                 icon: "📦", cat: "ドキュメント管理",   img: "16_dropbox.png",           desc: "シンプル・高速なクラウドストレージ" },
-  { id: "box",           name: "Box",                     icon: "📫", cat: "ドキュメント管理",   img: "17_box.png",               desc: "エンタープライズ向けセキュアクラウドストレージ" },
-  { id: "confluence",    name: "Confluence",              icon: "📚", cat: "ドキュメント管理",   img: "18_confluence.png",        desc: "Atlassianのチームwikiプラットフォーム" },
+  { id: "notion", name: "Notion", icon: "📄", cat: "ドキュメント管理", img: "15_notion.png",
+    desc: "メモ・Wiki・DB・プロジェクトを一元化",
+    easy: "メモ・表・タスク管理を1つのページに自由に組み合わせられる「万能ノート」。チームの情報置き場として大人気です。",
+    strengths: ["メモも表も掲示板も自由に作れる", "AIが文章作成や要約を手伝ってくれる", "チームの知識をきれいに整理できる"] },
+  { id: "dropbox", name: "Dropbox", icon: "📦", cat: "ドキュメント管理", img: "16_dropbox.png",
+    desc: "シンプル・高速なクラウドストレージ",
+    easy: "ファイルをインターネット上に保存して、どの端末からでも開けるようにする「クラウドの収納箱」です。",
+    strengths: ["パソコンのフォルダと自動で同期", "大きなファイルも簡単に共有", "間違って消しても元に戻せる"] },
+  { id: "box", name: "Box", icon: "📫", cat: "ドキュメント管理", img: "17_box.png",
+    desc: "エンタープライズ向けセキュアクラウドストレージ",
+    easy: "会社向けの安全性がとても高いファイル保管サービス。「誰がどのファイルを見られるか」を細かく決められるのが特長です。",
+    strengths: ["セキュリティの国際認証が充実", "閲覧・編集の権限を細かく設定", "1,500以上の業務ツールと連携"] },
+  { id: "confluence", name: "Confluence", icon: "📚", cat: "ドキュメント管理", img: "18_confluence.png",
+    desc: "Atlassianのチームwikiプラットフォーム",
+    easy: "チームの手順書や議事録をためていく「社内版Wikipedia」を作れるツール。散らばりがちな知識を1か所に集められます。",
+    strengths: ["議事録・仕様書のテンプレートが豊富", "タスク管理ツールJiraと連携", "チームごとにページを整理できる"] },
   // プロジェクト管理 (6)
-  { id: "asana",         name: "Asana",                   icon: "🎯", cat: "プロジェクト管理",   img: "19_asana.png",             desc: "タスク・プロジェクトを可視化するPM" },
-  { id: "trello",        name: "Trello",                  icon: "🗂", cat: "プロジェクト管理",   img: "20_trello.png",            desc: "カンバンボードで直感管理" },
-  { id: "backlog",       name: "Backlog",                 icon: "📋", cat: "プロジェクト管理",   img: "21_backlog.png",           desc: "国産の開発・プロジェクト管理ツール" },
-  { id: "jira",          name: "Jira",                    icon: "📌", cat: "プロジェクト管理",   img: "22_jira.png",              desc: "アジャイル開発の定番ツール" },
-  { id: "monday",        name: "monday.com",              icon: "📅", cat: "プロジェクト管理",   img: "23_monday.png",            desc: "視覚的で柔軟なワークOSプラットフォーム" },
-  { id: "clickup",       name: "ClickUp",                 icon: "🚀", cat: "プロジェクト管理",   img: "24_clickup.png",           desc: "タスク管理の究極オールインワン" },
+  { id: "asana", name: "Asana", icon: "🎯", cat: "プロジェクト管理", img: "19_asana.png",
+    desc: "タスク・プロジェクトを可視化するPM",
+    easy: "「誰が・何を・いつまでに」やるかを見える化するタスク管理ツール。仕事の抜け漏れや遅れを防いでくれます。",
+    strengths: ["スケジュールを帯グラフで確認できる", "毎回の繰り返し作業を自動化", "複数プロジェクトをまとめて俯瞰"] },
+  { id: "trello", name: "Trello", icon: "🗂", cat: "プロジェクト管理", img: "20_trello.png",
+    desc: "カンバンボードで直感管理",
+    easy: "やることを付箋のようなカードにして「未着手→作業中→完了」と動かして管理する、いちばん簡単なタスク管理ボードです。",
+    strengths: ["ドラッグ&ドロップの簡単操作", "必要な機能をあとから追加できる", "無料プランでも十分使える"] },
+  { id: "backlog", name: "Backlog", icon: "📋", cat: "プロジェクト管理", img: "21_backlog.png",
+    desc: "国産の開発・プロジェクト管理ツール",
+    easy: "日本製のプロジェクト管理ツール。タスク管理とシステム開発用の機能がセットになっていて、日本語サポートも安心です。",
+    strengths: ["タスクと開発の管理がひとまとめ", "工程表（ガントチャート）で進捗管理", "日本語のマニュアル・サポートが充実"] },
+  { id: "jira", name: "Jira", icon: "📌", cat: "プロジェクト管理", img: "22_jira.png",
+    desc: "アジャイル開発の定番ツール",
+    easy: "ソフトウェア開発チームの定番タスク管理ツール。短い期間で作っては見直す「アジャイル開発」の進め方が得意です。",
+    strengths: ["開発の計画と進み具合を見える化", "文書ツールConfluenceと連携", "チームのルールに合わせて細かく設定"] },
+  { id: "monday", name: "monday.com", icon: "📅", cat: "プロジェクト管理", img: "23_monday.png",
+    desc: "視覚的で柔軟なワークOSプラットフォーム",
+    easy: "カラフルな表で仕事を管理できるツール。豊富なテンプレートを、自分たちの仕事に合わせて自由に作り替えられます。",
+    strengths: ["ボードを自由にカスタマイズ", "200以上のテンプレートから選べる", "グラフで状況をひと目で把握"] },
+  { id: "clickup", name: "ClickUp", icon: "🚀", cat: "プロジェクト管理", img: "24_clickup.png",
+    desc: "タスク管理の究極オールインワン",
+    easy: "タスク・文書・目標管理などを1つに詰め込んだ「全部入り」ツール。リストやカレンダーなど見せ方も自由に切り替えられます。",
+    strengths: ["15種類以上の表示切り替え", "メモ・Wiki機能も内蔵", "無料プランでも高機能"] },
   // CRM・営業 (5)
-  { id: "salesforce",    name: "Salesforce",              icon: "☁", cat: "CRM・営業",          img: "25_salesforce.png",        desc: "世界シェアNo.1のCRM/SFAプラットフォーム" },
-  { id: "hubspot",       name: "HubSpot",                 icon: "🧲", cat: "CRM・営業",          img: "26_hubspot.png",           desc: "無料から始められるCRM・MA統合ツール" },
-  { id: "linebiz",       name: "公式LINE",                icon: "🟩", cat: "CRM・営業",          img: "27_official_line.png",     desc: "9,500万ユーザーへの直接リーチ" },
-  { id: "mailchimp",     name: "Mailchimp",               icon: "📧", cat: "CRM・営業",          img: "28_mailchimp.png",         desc: "世界最大のメールマーケティングツール" },
-  { id: "sansan",        name: "Sansan",                  icon: "💼", cat: "CRM・営業",          img: "29_sansan.png",            desc: "名刺管理DXのリーディングカンパニー" },
+  { id: "salesforce", name: "Salesforce", icon: "☁", cat: "CRM・営業", img: "25_salesforce.png",
+    desc: "世界シェアNo.1のCRM/SFAプラットフォーム",
+    easy: "「どのお客様と、どんな商談がどこまで進んでいるか」を管理する営業支援ツールの世界王者。売上の予測までできます。",
+    strengths: ["商談の進み具合を一元管理", "売上の見込みを自動で計算", "拡張機能で自社に合わせて成長"] },
+  { id: "hubspot", name: "HubSpot", icon: "🧲", cat: "CRM・営業", img: "26_hubspot.png",
+    desc: "無料から始められるCRM・MA統合ツール",
+    easy: "顧客管理・メール配信・Web集客をまとめてできるツール。無料から始められるので、営業DXの入門にぴったりです。",
+    strengths: ["無料で顧客管理を始められる", "メール配信や集客機能も内蔵", "顧客の行動を記録して営業に活用"] },
+  { id: "linebiz", name: "公式LINE", icon: "🟩", cat: "CRM・営業", img: "27_official_line.png",
+    desc: "9,500万ユーザーへの直接リーチ",
+    easy: "お店や会社の「公式LINEアカウント」を作って、お客様にメッセージやクーポンを直接届けられるサービスです。",
+    strengths: ["お客様のLINEに直接お知らせを配信", "自動返信・チャットボットに対応", "メニュー画面から予約や注文へ誘導"] },
+  { id: "mailchimp", name: "Mailchimp", icon: "📧", cat: "CRM・営業", img: "28_mailchimp.png",
+    desc: "世界最大のメールマーケティングツール",
+    easy: "お知らせメール（メルマガ）を簡単に作って一斉配信できるツール。どれだけ読まれたかの効果測定までセットです。",
+    strengths: ["ドラッグ&ドロップでメール作成", "開封率などの効果を測定できる", "相手に合わせた自動配信"] },
+  { id: "sansan", name: "Sansan", icon: "💼", cat: "CRM・営業", img: "29_sansan.png",
+    desc: "名刺管理DXのリーディングカンパニー",
+    easy: "もらった名刺をスキャンしてデータ化し、会社全体で共有できるサービス。「あの人誰だっけ？」がなくなります。",
+    strengths: ["名刺を高精度でデータ化", "社内の人脈を全員で共有できる", "会社情報と自動でひも付け"] },
   // 自動化・RPA (4)
-  { id: "zapier",        name: "Zapier",                  icon: "⚡", cat: "自動化・RPA",        img: "30_zapier.png",            desc: "7,000以上のアプリをノーコードで連携" },
-  { id: "make",          name: "Make",                    icon: "🔧", cat: "自動化・RPA",        img: "31_make.png",              desc: "視覚的なワークフロー自動化ツール" },
-  { id: "powerautomate", name: "Power Automate",          icon: "🌊", cat: "自動化・RPA",        img: "32_power_automate.png",    desc: "Microsoft製のRPA・フロー自動化" },
-  { id: "uipath",        name: "UiPath",                  icon: "🦾", cat: "自動化・RPA",        img: "33_uipath.png",            desc: "エンタープライズ向けRPAプラットフォーム" },
+  { id: "zapier", name: "Zapier", icon: "⚡", cat: "自動化・RPA", img: "30_zapier.png",
+    desc: "7,000以上のアプリをノーコードで連携",
+    easy: "「Gmailに届いた添付ファイルをDropboxに保存」のように、ツール同士を自動でつなぐ接着剤。プログラミングは不要です。",
+    strengths: ["7,000以上のアプリをつなげられる", "プログラミング不要で設定できる", "複数ステップの自動化も作れる"] },
+  { id: "make", name: "Make", icon: "🔧", cat: "自動化・RPA", img: "31_make.png",
+    desc: "視覚的なワークフロー自動化ツール",
+    easy: "自動化の流れを図を描くように組み立てられるツール。「もし〜なら〜する」という条件付きの複雑な自動化に強いです。",
+    strengths: ["図を描く感覚で自動化を設計", "条件分岐や繰り返しに対応", "1,700以上のアプリと連携"] },
+  { id: "powerautomate", name: "Power Automate", icon: "🌊", cat: "自動化・RPA", img: "32_power_automate.png",
+    desc: "Microsoft製のRPA・フロー自動化",
+    easy: "Microsoft製の自動化ツール。Excelへの転記やOutlookのメール整理など、パソコンの繰り返し作業を代わりにやってくれます。",
+    strengths: ["ExcelやOutlookの作業を自動化", "パソコン操作を記録してそのまま再現", "Microsoft 365との相性が抜群"] },
+  { id: "uipath", name: "UiPath", icon: "🦾", cat: "自動化・RPA", img: "33_uipath.png",
+    desc: "エンタープライズ向けRPAプラットフォーム",
+    easy: "人がパソコンで行う操作をロボットに覚えさせて、そのまま自動で再現させる本格的な自動化（RPA）ツールです。",
+    strengths: ["画面操作を記録して自動実行", "AIで紙の帳票も読み取れる", "たくさんのロボットをまとめて管理"] },
   // ローコード・DB (2)
-  { id: "kintone",       name: "kintone",                 icon: "⚙", cat: "ローコード・DB",     img: "34_kintone.png",           desc: "サイボウズのノーコード業務アプリ作成" },
-  { id: "airtable",      name: "Airtable",                icon: "📊", cat: "ローコード・DB",     img: "35_airtable.png",          desc: "スプレッドシート×データベースの融合" },
+  { id: "kintone", name: "kintone", icon: "⚙", cat: "ローコード・DB", img: "34_kintone.png",
+    desc: "サイボウズのノーコード業務アプリ作成",
+    easy: "プログラミングなしで「顧客リスト」「日報」などの業務アプリを自分で作れる、サイボウズの国産ツールです。",
+    strengths: ["ドラッグ&ドロップでアプリ作成", "申請・承認の流れも設定できる", "日本語サポートが手厚い"] },
+  { id: "airtable", name: "Airtable", icon: "📊", cat: "ローコード・DB", img: "35_airtable.png",
+    desc: "スプレッドシート×データベースの融合",
+    easy: "見た目はExcel、中身は本格データベース。同じデータをカレンダーやカード形式に切り替えて、柔軟に管理できます。",
+    strengths: ["表計算の感覚でデータベースを作成", "表示形式を自由に切り替え", "業務別のテンプレートが豊富"] },
   // 経理・HR (5)
-  { id: "freee",         name: "freee",                   icon: "💰", cat: "経理・HR",           img: "36_freee.png",             desc: "中小企業向けクラウド会計・HR" },
-  { id: "mfcloud",       name: "マネーフォワード クラウド", icon: "💎", cat: "経理・HR",           img: "37_moneyforward.png",      desc: "上場企業から中小まで対応の経理DX" },
-  { id: "smarthr",       name: "SmartHR",                 icon: "👥", cat: "経理・HR",           img: "38_smarthr.png",           desc: "労務・人事管理のクラウドNo.1" },
-  { id: "jobcan",        name: "ジョブカン",              icon: "⏱", cat: "経理・HR",           img: "39_jobcan.png",            desc: "勤怠・給与・経費を一元管理" },
-  { id: "rakuraku",      name: "楽楽精算",                icon: "🧾", cat: "経理・HR",           img: "40_rakuraku_seisan.png",   desc: "経費精算に特化したクラウドサービス" },
+  { id: "freee", name: "freee", icon: "💰", cat: "経理・HR", img: "36_freee.png",
+    desc: "中小企業向けクラウド会計・HR",
+    easy: "銀行口座やカードの明細を自動で取り込んで、帳簿づけから確定申告まで助けてくれる会計ソフトです。",
+    strengths: ["銀行・カード明細の自動取り込み", "帳簿づけをAIが提案してくれる", "確定申告の書類を自動作成"] },
+  { id: "mfcloud", name: "マネーフォワード クラウド", icon: "💎", cat: "経理・HR", img: "37_moneyforward.png",
+    desc: "上場企業から中小まで対応の経理DX",
+    easy: "会計・請求書・経費精算・給与計算までカバーする経理のクラウドセット。会社のお金まわりをまとめて効率化します。",
+    strengths: ["経費精算から会計までひとつながり", "電子帳簿保存法などの法律に対応", "銀行・カードと自動で連携"] },
+  { id: "smarthr", name: "SmartHR", icon: "👥", cat: "経理・HR", img: "38_smarthr.png",
+    desc: "労務・人事管理のクラウドNo.1",
+    easy: "入社手続きや年末調整などの人事の書類仕事を、紙を使わずインターネット上で完結させるサービスです。",
+    strengths: ["入退社の手続きをペーパーレス化", "年末調整もオンラインで完結", "従業員アンケート機能つき"] },
+  { id: "jobcan", name: "ジョブカン", icon: "⏱", cat: "経理・HR", img: "39_jobcan.png",
+    desc: "勤怠・給与・経費を一元管理",
+    easy: "出退勤の記録・シフト作成・給与計算などをまとめて管理できる、国産の働き方管理ツールです。",
+    strengths: ["打刻とシフト管理が簡単", "給与計算を自動化できる", "経費や交通費の精算にも対応"] },
+  { id: "rakuraku", name: "楽楽精算", icon: "🧾", cat: "経理・HR", img: "40_rakuraku_seisan.png",
+    desc: "経費精算に特化したクラウドサービス",
+    easy: "領収書をスマホで撮るだけで経費精算の申請ができるサービス。上司の承認までの流れも自動化してくれます。",
+    strengths: ["スマホ撮影だけで経費申請", "承認の流れを自動化", "電子帳簿保存法にも対応で安心"] },
   // デザイン (4)
-  { id: "canva",         name: "Canva",                   icon: "🎨", cat: "デザイン",           img: "41_canva.png",             desc: "ノンデザイナーが使える高品質デザインツール" },
-  { id: "figma",         name: "Figma",                   icon: "🎭", cat: "デザイン",           img: "42_figma.png",             desc: "UIデザイン・プロトタイピングの世界標準" },
-  { id: "adobeexpress",  name: "Adobe Express",           icon: "✨", cat: "デザイン",           img: "43_adobe_express.png",     desc: "Adobe製のかんたんデザインツール" },
-  { id: "miro",          name: "Miro",                    icon: "💡", cat: "デザイン",           img: "44_miro.png",              desc: "オンラインホワイトボード・ブレスト" },
+  { id: "canva", name: "Canva", icon: "🎨", cat: "デザイン", img: "41_canva.png",
+    desc: "ノンデザイナーが使える高品質デザインツール",
+    easy: "豊富なテンプレートを選んで文字を入れ替えるだけで、チラシやSNS画像がプロっぽく作れるデザインツールです。",
+    strengths: ["25万以上のテンプレート", "ロゴや配色をチームで統一できる", "作った画像をSNSへ直接投稿"] },
+  { id: "figma", name: "Figma", icon: "🎭", cat: "デザイン", img: "42_figma.png",
+    desc: "UIデザイン・プロトタイピングの世界標準",
+    easy: "アプリやWebサイトの画面デザインを、ブラウザ上でみんなと同時に作れるツール。デザイナーの世界標準です。",
+    strengths: ["複数人で同時にデザイン編集", "動く試作品（プロトタイプ）を作れる", "エンジニアへの受け渡しがスムーズ"] },
+  { id: "adobeexpress", name: "Adobe Express", icon: "✨", cat: "デザイン", img: "43_adobe_express.png",
+    desc: "Adobe製のかんたんデザインツール",
+    easy: "デザインの知識がなくても、Adobeの高品質な素材を使ってバナーやチラシをサッと作れるお手軽ツールです。",
+    strengths: ["プロ品質のAdobe素材が使える", "PDFやWordへの変換もできる", "AI（Firefly）で画像を生成"] },
+  { id: "miro", name: "Miro", icon: "💡", cat: "デザイン", img: "44_miro.png",
+    desc: "オンラインホワイトボード・ブレスト",
+    easy: "みんなで付箋を貼りながらアイデア出しができる、無限に広がるオンラインのホワイトボードです。",
+    strengths: ["広さ無限のホワイトボード", "付箋や図で考えを整理できる", "ビデオ会議をしながら共同作業"] },
   // 会議・録画 (3)
-  { id: "otter",         name: "Otter.ai",                icon: "🦦", cat: "会議・録画",         img: "45_otter_ai.png",          desc: "AIリアルタイム文字起こし&要約" },
-  { id: "tldv",          name: "tl;dv",                   icon: "⏩", cat: "会議・録画",         img: "46_tldv.png",              desc: "会議録画+AIハイライト抽出" },
-  { id: "loom",          name: "Loom",                    icon: "🎬", cat: "会議・録画",         img: "47_loom.png",              desc: "画面録画+非同期コミュニケーション" },
+  { id: "otter", name: "Otter.ai", icon: "🦦", cat: "会議・録画", img: "45_otter_ai.png",
+    desc: "AIリアルタイム文字起こし&要約",
+    easy: "会議の音声をその場で文字に起こし、要点まで自動でまとめてくれるAI議事録ツール。議事録係が不要になります。",
+    strengths: ["話した内容をその場で文字化", "要約と宿題（タスク）を自動で抽出", "ZoomやTeamsなどの会議と連携"] },
+  { id: "tldv", name: "tl;dv", icon: "⏩", cat: "会議・録画", img: "46_tldv.png",
+    desc: "会議録画+AIハイライト抽出",
+    easy: "オンライン会議を自動で録画して、AIが大事な場面に印を付けてくれるツール。あとから要点だけサッと見返せます。",
+    strengths: ["会議を自動録画してAIが要約", "重要シーンに時刻付きの印", "顧客管理ツールへメモを自動反映"] },
+  { id: "loom", name: "Loom", icon: "🎬", cat: "会議・録画", img: "47_loom.png",
+    desc: "画面録画+非同期コミュニケーション",
+    easy: "パソコン画面と自分の顔を同時に録画して、説明動画をサッと共有できるツール。「会議の代わりに動画を送る」働き方ができます。",
+    strengths: ["ワンクリックで画面を録画", "顔出し解説も同時にできる", "見た人がコメントで反応できる"] },
   // スケジュール (2)
-  { id: "calendly",      name: "Calendly",                icon: "📆", cat: "スケジュール",       img: "48_calendly.png",          desc: "日程調整を完全自動化" },
-  { id: "timerex",       name: "TimeRex",                 icon: "🗓", cat: "スケジュール",       img: "49_timerex.png",           desc: "日本企業向け日程調整ツール" },
+  { id: "calendly", name: "Calendly", icon: "📆", cat: "スケジュール", img: "48_calendly.png",
+    desc: "日程調整を完全自動化",
+    easy: "自分の空き時間を相手に見せて、そのまま予約してもらえる日程調整ツール。「いつ空いてますか？」のメール往復が消えます。",
+    strengths: ["カレンダー連携で空き時間を自動表示", "複数人の日程もまとめて調整", "会議URLの発行まで自動"] },
+  { id: "timerex", name: "TimeRex", icon: "🗓", cat: "スケジュール", img: "49_timerex.png",
+    desc: "日本企業向け日程調整ツール",
+    easy: "日本のビジネスマナーに合わせて作られた国産の日程調整ツール。URLを送るだけで打ち合わせの日時が決まります。",
+    strengths: ["空き時間を自動で相手に提示", "日本語で使いやすい画面", "ZoomやTeamsの会議URLも自動発行"] },
   // 決済 (1)
-  { id: "stripe",        name: "Stripe",                  icon: "💳", cat: "決済",               img: "50_stripe.png",            desc: "開発者フレンドリーな決済インフラ" },
+  { id: "stripe", name: "Stripe", icon: "💳", cat: "決済", img: "50_stripe.png",
+    desc: "開発者フレンドリーな決済インフラ",
+    easy: "Webサイトやアプリにクレジットカード決済の機能を組み込めるサービス。ネット上でお金を受け取る仕組みを作れます。",
+    strengths: ["世界中の通貨・決済方法に対応", "月額課金（サブスク）の管理", "プログラミング不要の決済リンクも作れる"] },
 ];
 
 /* ---------- 定数 ---------- */
@@ -100,6 +251,8 @@ const LAST_CALLOUTS = {
   slam:    "一撃ズドン!!",
   jirashi: "じらしからの…発掘!!",
   reverse: "まさかの逆回転!!",
+  feint: "フェイントからの発掘!!",
+  backstep: "一歩戻って発掘!!",
   rainbow: "AI大発掘ィィィ!!",
 };
 const SYNERGY_COMMENTS = [
@@ -313,28 +466,61 @@ class Reel {
     const H = ITEM_H(), L = LOOP();
     // slot番目のセルが中央(payline)に来る停止位置
     const targetMod = mod((pick.slot - 1) * H, L);
-    const startPos = this.pos;
-    let delta = mod(targetMod - mod(startPos, L), L);
+    let delta = mod(targetMod - mod(this.pos, L), L);
 
-    const conf = {
-      normal:  { minDist: L * 0.8, dur: 1100, ease: easeOutQuart },
-      slam:    { minDist: H * 4,   dur: 420,  ease: easeOutQuart },
-      jirashi: { minDist: L * 1.6, dur: 3200, ease: easeOutQuint },
-      reverse: { minDist: L * 0.8, dur: 1000, ease: easeOutQuart },
-    }[effect];
-
-    while (delta < conf.minDist) delta += L;
+    // 停止演出をフェーズ列で定義。fakeLand=true のフェーズ終端で「偽の停止」演出が入る
+    const Q = easeOutQuart, Q5 = easeOutQuint, IO = easeInOut;
+    let phases;
+    switch (effect) {
+      case "slam": // 一撃ビタ止め
+        while (delta < H * 4) delta += L;
+        phases = [{ delta, dur: 420, ease: Q }];
+        break;
+      case "jirashi": // 長いじらし減速
+        while (delta < L * 1.6) delta += L;
+        phases = [{ delta, dur: 3200, ease: Q5 }];
+        break;
+      case "reverse": // 一瞬逆回転してから止まる
+        while (delta < L * 0.8) delta += L;
+        phases = [
+          { delta: -H * 1.2, dur: 300, ease: IO },
+          { delta: delta + H * 1.2, dur: 1000, ease: Q },
+        ];
+        break;
+      case "feint": // 2コマ手前で止まったフリ→再加速して本当の停止
+        while (delta < L * 0.8) delta += L;
+        phases = [
+          { delta: delta - H * 2, dur: 1100, ease: Q, fakeLand: true },
+          { delta: H * 2, dur: 430, ease: Q, pauseBefore: 650 },
+        ];
+        break;
+      case "backstep": // 1コマ行き過ぎて止まったフリ→静かに1コマ戻る
+        while (delta < L * 0.8) delta += L;
+        phases = [
+          { delta: delta + H, dur: 1100, ease: Q, fakeLand: true },
+          { delta: -H, dur: 420, ease: IO, pauseBefore: 650 },
+        ];
+        break;
+      case "minifeint": // 通常リール用の小フェイント（1コマ手前で止まったフリ）
+        while (delta < L * 0.8) delta += L;
+        phases = [
+          { delta: delta - H, dur: 1100, ease: Q, fakeLand: true },
+          { delta: H, dur: 330, ease: Q, pauseBefore: 500 },
+        ];
+        break;
+      default: // normal
+        while (delta < L * 0.8) delta += L;
+        phases = [{ delta, dur: 1100, ease: Q }];
+    }
 
     this.mode = "stopping";
     this.anim = {
-      effect,
-      startPos,
-      delta,
-      dur: conf.dur,
-      ease: conf.ease,
+      phases,
+      idx: 0,
+      startPos: this.pos,
       t0: performance.now(),
+      waitUntil: 0,
       lastTickCell: -1,
-      revDone: false,
     };
   }
 
@@ -352,22 +538,16 @@ class Reel {
     } else if (this.mode === "stopping") {
       const a = this.anim;
 
-      // 逆回転演出：最初の300msだけ逆走してから本停止へ
-      if (a.effect === "reverse" && !a.revDone) {
-        const rt = (now - a.t0) / 300;
-        if (rt < 1) {
-          this.pos = mod(a.startPos - easeInOut(rt) * ITEM_H() * 1.2, L);
-          this.draw();
-          return;
-        }
-        a.revDone = true;
-        a.delta += a.startPos - this.pos + (a.startPos > this.pos ? 0 : L); // 逆走ぶんを補正
-        a.startPos = this.pos;
+      // フェイント中の「止まったフリ」待機
+      if (a.waitUntil) {
+        if (now < a.waitUntil) { this.draw(); return; }
+        a.waitUntil = 0;
         a.t0 = now;
       }
 
-      const t = Math.min(1, (now - a.t0) / a.dur);
-      this.pos = mod(a.startPos + a.delta * a.ease(t), L);
+      const ph = a.phases[a.idx];
+      const t = Math.min(1, (now - a.t0) / ph.dur);
+      this.pos = mod(a.startPos + ph.delta * ph.ease(t), L);
 
       // 減速中のコマ送りチック音
       const cell = Math.floor(this.pos / ITEM_H());
@@ -375,9 +555,19 @@ class Reel {
       if (t > 0.4) this.strip.classList.remove("blur");
 
       if (t >= 1) {
-        this.pos = mod(a.startPos + a.delta, L);
-        this.mode = "stopped";
-        if (this.onLanded) this.onLanded(this);
+        this.pos = mod(a.startPos + ph.delta, L);
+        a.startPos = this.pos;
+        if (a.idx < a.phases.length - 1) {
+          // まだ続きがある＝偽の停止（フェイント）
+          if (ph.fakeLand && this.onFakeLand) this.onFakeLand(this);
+          a.idx++;
+          a.t0 = now;
+          const next = a.phases[a.idx];
+          if (next.pauseBefore) a.waitUntil = now + next.pauseBefore;
+        } else {
+          this.mode = "stopped";
+          if (this.onLanded) this.onLanded(this);
+        }
       }
     }
     this.draw();
@@ -940,17 +1130,26 @@ function stopNext() {
   if (!isLast) {
     // 2番目のリールでもたまにチャンス煽り
     if (nextStop === 2 && Math.random() < 0.3) showCutin("チャンス!?", "gold");
+    // 15%でミニフェイント（1コマ手前で止まったフリ→もう1コマ進む）
+    const eff = Math.random() < 0.15 ? "minifeint" : "normal";
+    reel.onFakeLand = (r) => onReelFakeLand(r, false);
     reel.onLanded = (r) => onReelLanded(r, false);
-    reel.planStop(forbidden, "normal");
+    reel.planStop(forbidden, eff);
     return;
   }
 
-  // 最終リール：4種の演出から抽選
+  // 最終リール：6種の演出から抽選
   const roll = Math.random();
-  const effect = roll < 0.25 ? "slam" : roll < 0.5 ? "jirashi" : roll < 0.75 ? "reverse" : "rainbow";
+  const effect =
+    roll < 0.16 ? "slam" :
+    roll < 0.32 ? "jirashi" :
+    roll < 0.48 ? "reverse" :
+    roll < 0.64 ? "feint" :
+    roll < 0.80 ? "backstep" : "rainbow";
   lastEffect = effect;
   reel.el.classList.add("hot");
   startLamps(true);
+  reel.onFakeLand = (r) => onReelFakeLand(r, true);
   reel.onLanded = (r) => onReelLanded(r, true);
 
   if (effect === "rainbow") {
@@ -966,6 +1165,21 @@ function stopNext() {
   if (effect === "jirashi") showCutin("まだだ…まだ終わらんよ…");
   if (effect === "reverse") showCutin("な、なんと逆回転!?", "cyan");
   reel.planStop(forbidden, effect);
+}
+
+/* 偽の停止（フェイント）：本物そっくりの停止演出→直後にもう一度動き出す */
+function onReelFakeLand(reel, isLast) {
+  playSfx(`stop${(reel.index % 3) + 1}`, .8);
+  reel.flash();
+  shockwave(reel.el);
+  reel.el.classList.remove("landed");
+  void reel.el.offsetWidth;
+  reel.el.classList.add("landed");
+  showCallout(isLast ? "…と見せかけて!?" : "おっと!?");
+  // 動き出す瞬間にブラーを戻すと「まだ終わってない」感が出る
+  setTimeout(() => {
+    if (reel.mode === "stopping") reel.strip.classList.add("blur");
+  }, 600);
 }
 
 function onReelLanded(reel, isLast) {
@@ -1040,7 +1254,25 @@ function showResult() {
     const cat = elem("span", "cat", c.label);
     cat.style.background = c.color;
     card.appendChild(cat);
-    card.appendChild(elem("p", null, t.desc));
+    card.appendChild(elem("p", "tagline", t.desc));
+
+    // 初学者向け解説：どんなツール？
+    if (t.easy) {
+      const easyBox = elem("div", "easy-box");
+      easyBox.appendChild(elem("div", "easy-head", "🔰 どんなツール？"));
+      easyBox.appendChild(elem("p", "easy-text", t.easy));
+      card.appendChild(easyBox);
+    }
+    // 初学者向け解説：得意なこと
+    if (t.strengths && t.strengths.length) {
+      const strBox = elem("div", "easy-box");
+      strBox.appendChild(elem("div", "easy-head", "💪 得意なこと"));
+      const ul = elem("ul", "strength-list");
+      for (const s of t.strengths) ul.appendChild(elem("li", null, s));
+      strBox.appendChild(ul);
+      card.appendChild(strBox);
+    }
+    card.appendChild(elem("span", "detail-link", "くわしく見る →"));
     cards.appendChild(card);
   }
   saveZukan(zukan);
