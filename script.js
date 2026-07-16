@@ -1,73 +1,92 @@
 /* ================= IT発掘スロット ================= */
 "use strict";
 
-/* ---------- 50種類のITツール（全て異なる） ---------- */
+/* ---------- 50種類のITツール（IT_tool_Creatteカタログ準拠・全て異なる） ---------- */
 const CATS = {
-  dev:    { label: "開発",     color: "#3b82f6" },
-  infra:  { label: "インフラ", color: "#22a55e" },
-  data:   { label: "データ",   color: "#0ea5b7" },
-  ai:     { label: "AI",       color: "#8b5cf6" },
-  design: { label: "デザイン", color: "#ec4899" },
-  biz:    { label: "ビジネス", color: "#f59e0b" },
+  "AI":                 { label: "AI",                 color: "#8b5cf6" },
+  "コミュニケーション": { label: "コミュニケーション", color: "#ec4899" },
+  "ビデオ会議":         { label: "ビデオ会議",         color: "#2d8cff" },
+  "生産性スイート":     { label: "生産性スイート",     color: "#0ea5b7" },
+  "ドキュメント管理":   { label: "ドキュメント管理",   color: "#6366f1" },
+  "プロジェクト管理":   { label: "プロジェクト管理",   color: "#ef4444" },
+  "CRM・営業":          { label: "CRM・営業",          color: "#f59e0b" },
+  "自動化・RPA":        { label: "自動化・RPA",        color: "#f97316" },
+  "ローコード・DB":     { label: "ローコード・DB",     color: "#22a55e" },
+  "経理・HR":           { label: "経理・HR",           color: "#84cc16" },
+  "デザイン":           { label: "デザイン",           color: "#d946ef" },
+  "会議・録画":         { label: "会議・録画",         color: "#14b8a6" },
+  "スケジュール":       { label: "スケジュール",       color: "#eab308" },
+  "決済":               { label: "決済",               color: "#635bff" },
 };
 
+const IMG_DIR = "assets/img/";
+const DETAIL_BASE = "https://ittool.creatte.jp/"; // カタログサイト（結果カードのリンク先）
+
 const TOOLS = [
-  // 開発 (10)
-  { name: "GitHub",           icon: "🐙", cat: "dev",    desc: "世界最大のコード共有プラットフォーム。開発者の秘密基地。" },
-  { name: "Git",              icon: "🌿", cat: "dev",    desc: "バージョン管理の王様。コミットは考古学の地層。" },
-  { name: "VS Code",          icon: "💻", cat: "dev",    desc: "みんな大好き万能エディタ。拡張機能は無限の鉱脈。" },
-  { name: "TypeScript",       icon: "🔷", cat: "dev",    desc: "型で守られたJavaScript。バグを掘る前に埋める。" },
-  { name: "Python",           icon: "🐍", cat: "dev",    desc: "AIからWebまで何でも書ける蛇。読みやすさが武器。" },
-  { name: "React",            icon: "⚛️", cat: "dev",    desc: "UIをコンポーネントで組み立てるライブラリ界の巨人。" },
-  { name: "Node.js",          icon: "🟩", cat: "dev",    desc: "JavaScriptをサーバーでも動かす実行環境。" },
-  { name: "Next.js",          icon: "⏭️", cat: "dev",    desc: "Reactのフルスタック相棒。爆速サイトの鋳型。" },
-  { name: "Postman",          icon: "📮", cat: "dev",    desc: "APIテストの定番郵便屋さん。リクエストを届ける。" },
-  { name: "GitLab",           icon: "🦊", cat: "dev",    desc: "CI/CDまで全部入りのDevOpsキツネ。" },
-  // インフラ (10)
-  { name: "Docker",           icon: "🐳", cat: "infra",  desc: "アプリをコンテナで運ぶクジラ。「動かない」を撲滅。" },
-  { name: "Kubernetes",       icon: "☸️", cat: "infra",  desc: "コンテナの艦隊を操る操舵輪。通称K8s。" },
-  { name: "AWS",              icon: "☁️", cat: "infra",  desc: "世界を支えるクラウドの巨人。サービス数は200超。" },
-  { name: "Terraform",        icon: "🏗️", cat: "infra",  desc: "インフラをコードで建てる重機。宣言すれば現れる。" },
-  { name: "Nginx",            icon: "🚦", cat: "infra",  desc: "高速Webサーバー兼交通整理員。読みは「エンジンエックス」。" },
-  { name: "Linux",            icon: "🐧", cat: "infra",  desc: "サーバー界を支配するペンギン。世界はコイツで動いてる。" },
-  { name: "Jenkins",          icon: "🎩", cat: "infra",  desc: "CI/CDの老舗執事。ビルドもテストもお任せあれ。" },
-  { name: "Ansible",          icon: "🎛️", cat: "infra",  desc: "サーバー設定を自動化する指揮者。YAMLで命令。" },
-  { name: "Vercel",           icon: "🔺", cat: "infra",  desc: "フロントエンドを秒でデプロイする黒い三角。" },
-  { name: "Firebase",         icon: "🔥", cat: "infra",  desc: "Google製の爆速バックエンド一式。個人開発の火種。" },
-  // データ (10)
-  { name: "PostgreSQL",       icon: "🐘", cat: "data",   desc: "何でも飲み込む堅牢なリレーショナルDBの象。" },
-  { name: "Redis",            icon: "🧨", cat: "data",   desc: "メモリで動く爆速キャッシュ。ミリ秒の世界の住人。" },
-  { name: "Elasticsearch",    icon: "🔎", cat: "data",   desc: "巨大データから一瞬で探し出す全文検索エンジン。" },
-  { name: "Grafana",          icon: "📉", cat: "data",   desc: "メトリクスを美しく可視化するダッシュボード職人。" },
-  { name: "Tableau",          icon: "📊", cat: "data",   desc: "ドラッグ&ドロップでデータを絵にするBIの雄。" },
-  { name: "Power BI",         icon: "📈", cat: "data",   desc: "Microsoft製BI。Excelの兄貴分として経営を照らす。" },
-  { name: "BigQuery",         icon: "🗄️", cat: "data",   desc: "ペタバイト級を数秒で叩き切るGoogleのDWH。" },
-  { name: "Snowflake",        icon: "❄️", cat: "data",   desc: "クラウドDWHの雪の結晶。データを凍らせず溶かして使う。" },
-  { name: "Kafka",            icon: "📨", cat: "data",   desc: "大量イベントを流し続ける分散メッセージ基盤。" },
-  { name: "Google Analytics", icon: "🔍", cat: "data",   desc: "サイト訪問者の足跡を追う定番アクセス解析。" },
-  // AI (5)
-  { name: "ChatGPT",          icon: "🤖", cat: "ai",     desc: "会話型AIブームの火付け役。相談相手は無限。" },
-  { name: "Claude",           icon: "✨", cat: "ai",     desc: "Anthropic製の思慮深いAIアシスタント。長文もお手のもの。" },
-  { name: "GitHub Copilot",   icon: "🧑‍✈️", cat: "ai",     desc: "コードを先読みして提案するAI副操縦士。" },
-  { name: "Zapier",           icon: "⚡", cat: "ai",     desc: "アプリ同士をノーコードで繋ぐ自動化の雷。" },
-  { name: "Midjourney",       icon: "🖼️", cat: "ai",     desc: "言葉から絵を生み出す画像生成AIの画家。" },
-  // デザイン (5)
-  { name: "Figma",            icon: "🎨", cat: "design", desc: "ブラウザで共同編集できるUIデザインの中心地。" },
-  { name: "Photoshop",        icon: "🖌️", cat: "design", desc: "画像編集の代名詞。「フォトショで加工」は日常語。" },
-  { name: "Illustrator",      icon: "✒️", cat: "design", desc: "ロゴもイラストも自在なベクターデザインの匠。" },
-  { name: "Canva",            icon: "🌈", cat: "design", desc: "誰でもデザイナーになれるテンプレの宝箱。" },
-  { name: "Blender",          icon: "🌀", cat: "design", desc: "無料で本格3DCG。モデリングから動画まで。" },
-  // ビジネス (10)
-  { name: "Slack",            icon: "💬", cat: "biz",    desc: "仕事の会話が集まるチームチャットの本丸。" },
-  { name: "Notion",           icon: "📝", cat: "biz",    desc: "メモもDBもWikiも一冊に。万能ノートの完成形。" },
-  { name: "Zoom",             icon: "🎥", cat: "biz",    desc: "ビデオ会議の代名詞。「ズームで」が動詞になった。" },
-  { name: "Jira",             icon: "📋", cat: "biz",    desc: "チケットでプロジェクトを回す進行管理の番人。" },
-  { name: "Trello",           icon: "🗂️", cat: "biz",    desc: "カンバン方式でタスクを整理するカードの達人。" },
-  { name: "Salesforce",       icon: "⛅", cat: "biz",    desc: "営業と顧客管理を支配するCRMの王国。" },
-  { name: "Excel",            icon: "🧮", cat: "biz",    desc: "世界で最も使われる表計算。実は最強のローコード。" },
-  { name: "Miro",             icon: "🧠", cat: "biz",    desc: "無限に広がるオンラインホワイトボード。" },
-  { name: "Shopify",          icon: "🛒", cat: "biz",    desc: "ネットショップを最速で開けるECの相棒。" },
-  { name: "Stripe",           icon: "💳", cat: "biz",    desc: "数行のコードで決済を実装するお金のインフラ。" },
+  // AI (6) — 激レア演出の当たり枠
+  { id: "chatgpt",       name: "ChatGPT",                 icon: "🤖", cat: "AI",                 img: "01_chatgpt.png",           desc: "OpenAIの高性能AIチャット" },
+  { id: "claude",        name: "Claude",                  icon: "🌿", cat: "AI",                 img: "02_claude.png",            desc: "Anthropicの安全性重視AI" },
+  { id: "gemini",        name: "Gemini",                  icon: "♊", cat: "AI",                 img: "03_gemini.png",            desc: "GoogleのマルチモーダルAI" },
+  { id: "notebooklm",    name: "NotebookLM",              icon: "📓", cat: "AI",                 img: "04_notebooklm.png",        desc: "Googleのドキュメント特化AI" },
+  { id: "perplexity",    name: "Perplexity",              icon: "🔎", cat: "AI",                 img: "05_perplexity.png",        desc: "AI搭載のリアルタイム検索エンジン" },
+  { id: "copilot",       name: "Microsoft Copilot",       icon: "🪁", cat: "AI",                 img: "06_microsoft_copilot.png", desc: "Microsoft 365に統合されたAI" },
+  // コミュニケーション (4)
+  { id: "slack",         name: "Slack",                   icon: "💬", cat: "コミュニケーション", img: "07_slack.png",             desc: "チームのハブとなるビジネスチャット" },
+  { id: "teams",         name: "Microsoft Teams",         icon: "🟦", cat: "コミュニケーション", img: "08_microsoft_teams.png",   desc: "Microsoft 365統合のコラボ基盤" },
+  { id: "chatwork",      name: "Chatwork",                icon: "💭", cat: "コミュニケーション", img: "09_chatwork.png",          desc: "国内シェアNo.1のビジネスチャット" },
+  { id: "lineworks",     name: "LINE WORKS",              icon: "💚", cat: "コミュニケーション", img: "10_line_works.png",        desc: "LINEライクなビジネス版チャット" },
+  // ビデオ会議 (2)
+  { id: "zoom",          name: "Zoom",                    icon: "📹", cat: "ビデオ会議",         img: "11_zoom.png",              desc: "世界標準のオンライン会議ツール" },
+  { id: "meet",          name: "Google Meet",             icon: "📺", cat: "ビデオ会議",         img: "12_google_meet.png",       desc: "Google Workspace統合のビデオ通話" },
+  // 生産性スイート (2)
+  { id: "gws",           name: "Google Workspace",        icon: "🌐", cat: "生産性スイート",     img: "13_google_workspace.png",  desc: "Google製クラウドビジネスツール群" },
+  { id: "m365",          name: "Microsoft 365",           icon: "🪟", cat: "生産性スイート",     img: "14_microsoft_365.png",     desc: "Word・Excel・PowerPointのクラウド版" },
+  // ドキュメント管理 (4)
+  { id: "notion",        name: "Notion",                  icon: "📄", cat: "ドキュメント管理",   img: "15_notion.png",            desc: "メモ・Wiki・DB・プロジェクトを一元化" },
+  { id: "dropbox",       name: "Dropbox",                 icon: "📦", cat: "ドキュメント管理",   img: "16_dropbox.png",           desc: "シンプル・高速なクラウドストレージ" },
+  { id: "box",           name: "Box",                     icon: "📫", cat: "ドキュメント管理",   img: "17_box.png",               desc: "エンタープライズ向けセキュアクラウドストレージ" },
+  { id: "confluence",    name: "Confluence",              icon: "📚", cat: "ドキュメント管理",   img: "18_confluence.png",        desc: "Atlassianのチームwikiプラットフォーム" },
+  // プロジェクト管理 (6)
+  { id: "asana",         name: "Asana",                   icon: "🎯", cat: "プロジェクト管理",   img: "19_asana.png",             desc: "タスク・プロジェクトを可視化するPM" },
+  { id: "trello",        name: "Trello",                  icon: "🗂", cat: "プロジェクト管理",   img: "20_trello.png",            desc: "カンバンボードで直感管理" },
+  { id: "backlog",       name: "Backlog",                 icon: "📋", cat: "プロジェクト管理",   img: "21_backlog.png",           desc: "国産の開発・プロジェクト管理ツール" },
+  { id: "jira",          name: "Jira",                    icon: "📌", cat: "プロジェクト管理",   img: "22_jira.png",              desc: "アジャイル開発の定番ツール" },
+  { id: "monday",        name: "monday.com",              icon: "📅", cat: "プロジェクト管理",   img: "23_monday.png",            desc: "視覚的で柔軟なワークOSプラットフォーム" },
+  { id: "clickup",       name: "ClickUp",                 icon: "🚀", cat: "プロジェクト管理",   img: "24_clickup.png",           desc: "タスク管理の究極オールインワン" },
+  // CRM・営業 (5)
+  { id: "salesforce",    name: "Salesforce",              icon: "☁", cat: "CRM・営業",          img: "25_salesforce.png",        desc: "世界シェアNo.1のCRM/SFAプラットフォーム" },
+  { id: "hubspot",       name: "HubSpot",                 icon: "🧲", cat: "CRM・営業",          img: "26_hubspot.png",           desc: "無料から始められるCRM・MA統合ツール" },
+  { id: "linebiz",       name: "公式LINE",                icon: "🟩", cat: "CRM・営業",          img: "27_official_line.png",     desc: "9,500万ユーザーへの直接リーチ" },
+  { id: "mailchimp",     name: "Mailchimp",               icon: "📧", cat: "CRM・営業",          img: "28_mailchimp.png",         desc: "世界最大のメールマーケティングツール" },
+  { id: "sansan",        name: "Sansan",                  icon: "💼", cat: "CRM・営業",          img: "29_sansan.png",            desc: "名刺管理DXのリーディングカンパニー" },
+  // 自動化・RPA (4)
+  { id: "zapier",        name: "Zapier",                  icon: "⚡", cat: "自動化・RPA",        img: "30_zapier.png",            desc: "7,000以上のアプリをノーコードで連携" },
+  { id: "make",          name: "Make",                    icon: "🔧", cat: "自動化・RPA",        img: "31_make.png",              desc: "視覚的なワークフロー自動化ツール" },
+  { id: "powerautomate", name: "Power Automate",          icon: "🌊", cat: "自動化・RPA",        img: "32_power_automate.png",    desc: "Microsoft製のRPA・フロー自動化" },
+  { id: "uipath",        name: "UiPath",                  icon: "🦾", cat: "自動化・RPA",        img: "33_uipath.png",            desc: "エンタープライズ向けRPAプラットフォーム" },
+  // ローコード・DB (2)
+  { id: "kintone",       name: "kintone",                 icon: "⚙", cat: "ローコード・DB",     img: "34_kintone.png",           desc: "サイボウズのノーコード業務アプリ作成" },
+  { id: "airtable",      name: "Airtable",                icon: "📊", cat: "ローコード・DB",     img: "35_airtable.png",          desc: "スプレッドシート×データベースの融合" },
+  // 経理・HR (5)
+  { id: "freee",         name: "freee",                   icon: "💰", cat: "経理・HR",           img: "36_freee.png",             desc: "中小企業向けクラウド会計・HR" },
+  { id: "mfcloud",       name: "マネーフォワード クラウド", icon: "💎", cat: "経理・HR",           img: "37_moneyforward.png",      desc: "上場企業から中小まで対応の経理DX" },
+  { id: "smarthr",       name: "SmartHR",                 icon: "👥", cat: "経理・HR",           img: "38_smarthr.png",           desc: "労務・人事管理のクラウドNo.1" },
+  { id: "jobcan",        name: "ジョブカン",              icon: "⏱", cat: "経理・HR",           img: "39_jobcan.png",            desc: "勤怠・給与・経費を一元管理" },
+  { id: "rakuraku",      name: "楽楽精算",                icon: "🧾", cat: "経理・HR",           img: "40_rakuraku_seisan.png",   desc: "経費精算に特化したクラウドサービス" },
+  // デザイン (4)
+  { id: "canva",         name: "Canva",                   icon: "🎨", cat: "デザイン",           img: "41_canva.png",             desc: "ノンデザイナーが使える高品質デザインツール" },
+  { id: "figma",         name: "Figma",                   icon: "🎭", cat: "デザイン",           img: "42_figma.png",             desc: "UIデザイン・プロトタイピングの世界標準" },
+  { id: "adobeexpress",  name: "Adobe Express",           icon: "✨", cat: "デザイン",           img: "43_adobe_express.png",     desc: "Adobe製のかんたんデザインツール" },
+  { id: "miro",          name: "Miro",                    icon: "💡", cat: "デザイン",           img: "44_miro.png",              desc: "オンラインホワイトボード・ブレスト" },
+  // 会議・録画 (3)
+  { id: "otter",         name: "Otter.ai",                icon: "🦦", cat: "会議・録画",         img: "45_otter_ai.png",          desc: "AIリアルタイム文字起こし&要約" },
+  { id: "tldv",          name: "tl;dv",                   icon: "⏩", cat: "会議・録画",         img: "46_tldv.png",              desc: "会議録画+AIハイライト抽出" },
+  { id: "loom",          name: "Loom",                    icon: "🎬", cat: "会議・録画",         img: "47_loom.png",              desc: "画面録画+非同期コミュニケーション" },
+  // スケジュール (2)
+  { id: "calendly",      name: "Calendly",                icon: "📆", cat: "スケジュール",       img: "48_calendly.png",          desc: "日程調整を完全自動化" },
+  { id: "timerex",       name: "TimeRex",                 icon: "🗓", cat: "スケジュール",       img: "49_timerex.png",           desc: "日本企業向け日程調整ツール" },
+  // 決済 (1)
+  { id: "stripe",        name: "Stripe",                  icon: "💳", cat: "決済",               img: "50_stripe.png",            desc: "開発者フレンドリーな決済インフラ" },
 ];
 
 /* ---------- 定数 ---------- */
@@ -81,7 +100,7 @@ const LAST_CALLOUTS = {
   slam:    "一撃ズドン!!",
   jirashi: "じらしからの…発掘!!",
   reverse: "まさかの逆回転!!",
-  rainbow: "大発掘ィィィ!!",
+  rainbow: "AI大発掘ィィィ!!",
 };
 const SYNERGY_COMMENTS = [
   "この3つでスタートアップが1社できます。",
@@ -98,6 +117,22 @@ function elem(tag, className, text) {
   if (className) e.className = className;
   if (text !== undefined) e.textContent = text;
   return e;
+}
+
+/* ツールのビジュアル（画像優先・読み込み失敗時は絵文字にフォールバック） */
+function makeToolIcon(tool, cls) {
+  if (tool.img) {
+    const im = document.createElement("img");
+    im.className = cls;
+    im.src = IMG_DIR + tool.img;
+    im.alt = tool.name;
+    im.draggable = false;
+    im.addEventListener("error", () => {
+      im.replaceWith(elem("span", cls, tool.icon));
+    }, { once: true });
+    return im;
+  }
+  return elem("span", cls, tool.icon);
 }
 
 /* ---------- サウンド (Web Audio / 外部ファイル不要) ---------- */
@@ -223,7 +258,8 @@ class Reel {
     this.strip = el.querySelector(".strip");
     this.flashEl = el.querySelector(".flash");
     this.order = shuffle([...Array(N).keys()]); // リールごとに違う並び
-    this.pos = mod((Math.floor(Math.random() * N) - 1) * ITEM_H(), LOOP()); // コマ境界にスナップ
+    this.centerSlot = Math.floor(Math.random() * N); // 中央（ペイライン）に見せるコマ
+    this.pos = mod((this.centerSlot - 1) * ITEM_H(), LOOP()); // コマ境界にスナップ
     this.speed = 0;     // px/ms
     this.mode = "idle"; // idle | accel | spin | stopping | stopped
     this.anim = null;
@@ -239,7 +275,7 @@ class Reel {
         const t = TOOLS[ti];
         const c = CATS[t.cat];
         const cell = elem("div", "cell");
-        cell.appendChild(elem("span", "icon", t.icon));
+        cell.appendChild(makeToolIcon(t, "icon"));
         cell.appendChild(elem("span", "name", t.name));
         const cat = elem("span", "cat", c.label);
         cat.style.background = c.color;
@@ -261,13 +297,18 @@ class Reel {
     this.el.classList.remove("landed");
   }
 
-  /* 停止：forbidden に含まれないツールへ着地する */
-  planStop(forbiddenNames, effect = "normal") {
-    const candidates = this.order
+  /* 停止：forbidden に含まれないツールへ着地する（onlyCat指定でカテゴリ確定） */
+  planStop(forbiddenNames, effect = "normal", onlyCat = null) {
+    let candidates = this.order
       .map((ti, slot) => ({ tool: TOOLS[ti], slot }))
       .filter((c) => !forbiddenNames.has(c.tool.name));
+    if (onlyCat) {
+      const catCands = candidates.filter((c) => c.tool.cat === onlyCat);
+      if (catCands.length) candidates = catCands;
+    }
     const pick = candidates[Math.floor(Math.random() * candidates.length)];
     this.resultTool = pick.tool;
+    this.centerSlot = pick.slot;
 
     const H = ITEM_H(), L = LOOP();
     // slot番目のセルが中央(payline)に来る停止位置
@@ -489,7 +530,7 @@ function updateBg(now) {
 }
 
 /* ---------- 図鑑 (localStorage) ---------- */
-const ZUKAN_KEY = "it-dig-slot-zukan";
+const ZUKAN_KEY = "it-dig-slot-zukan-v2"; // v2: IT_tool_Creatte版ラインナップ
 function loadZukan() {
   try { return new Set(JSON.parse(localStorage.getItem(ZUKAN_KEY)) || []); }
   catch { return new Set(); }
@@ -504,6 +545,16 @@ function renderZukan() {
 /* ---------- ゲーム本体 ---------- */
 const reelEls = [...document.querySelectorAll(".reel")];
 const reels = reelEls.map((el, i) => new Reel(el, i));
+
+// リサイズで --item-h が変わっても停止中のコマがズレないよう再スナップ
+addEventListener("resize", () => {
+  for (const r of reels) {
+    if (r.mode === "idle" || r.mode === "stopped") {
+      r.pos = mod((r.centerSlot - 1) * ITEM_H(), LOOP());
+      r.draw();
+    }
+  }
+});
 const mainBtn = document.getElementById("mainBtn");
 const mainBtnText = document.getElementById("mainBtnText");
 const machine = document.getElementById("machine");
@@ -575,7 +626,7 @@ const MOVIE_SRC = {
 function playMovie(kind, dur, onDone) {
   moviePlaying = true;
   movieCaption.textContent =
-    kind === "drill" ? "掘削中……地中に何かの気配……!!" : "流星接近……超発掘チャンス!?";
+    kind === "drill" ? "掘削中……AI級レア鉱脈の気配……!!" : "流星接近……AIツール確定チャンス!?";
   movieEl.classList.add("go");
   playSfx("cutin", .7);
 
@@ -792,7 +843,7 @@ const zcName = document.getElementById("zcName");
 const zcCat = document.getElementById("zcCat");
 function showZoomCard(tool) {
   const c = CATS[tool.cat];
-  zcIcon.textContent = tool.icon;
+  zcIcon.replaceChildren(makeToolIcon(tool, "zc-img"));
   zcName.textContent = tool.name;
   zcCat.textContent = c.label;
   zcCat.style.background = c.color;
@@ -903,11 +954,11 @@ function stopNext() {
   reel.onLanded = (r) => onReelLanded(r, true);
 
   if (effect === "rainbow") {
-    // プレミア：発掘ムービーが流れてからのスラム停止
+    // プレミア：発掘ムービーが流れてからのスラム停止。当たりは必ずAIツール
     const kind = Math.random() < 0.5 ? "drill" : "meteor";
     playMovie(kind, 2800, () => {
       playSfx("bell", .8);
-      reel.planStop(forbidden, "slam");
+      reel.planStop(forbidden, "slam", "AI");
     });
     return;
   }
@@ -977,9 +1028,14 @@ function showResult() {
     const isNew = !zukan.has(t.name);
     zukan.add(t.name);
     const c = CATS[t.cat];
-    const card = elem("div", "tool-card");
+    const card = elem("a", "tool-card");
+    card.href = DETAIL_BASE + t.id + ".html";
+    card.target = "_blank";
+    card.rel = "noopener";
     if (isNew) card.appendChild(elem("span", "new-badge", "NEW!"));
-    card.appendChild(elem("div", "icon", t.icon));
+    const iconWrap = elem("div", "icon");
+    iconWrap.appendChild(makeToolIcon(t, "card-img"));
+    card.appendChild(iconWrap);
     card.appendChild(elem("h3", null, t.name));
     const cat = elem("span", "cat", c.label);
     cat.style.background = c.color;
