@@ -3,20 +3,20 @@
 
 /* ---------- 50種類のITツール（IT_tool_Creatteカタログ準拠・全て異なる） ---------- */
 const CATS = {
-  "AI":                 { label: "AI",                 color: "#8b5cf6" },
-  "コミュニケーション": { label: "コミュニケーション", color: "#ec4899" },
-  "ビデオ会議":         { label: "ビデオ会議",         color: "#2d8cff" },
-  "生産性スイート":     { label: "生産性スイート",     color: "#0ea5b7" },
-  "ドキュメント管理":   { label: "ドキュメント管理",   color: "#6366f1" },
-  "プロジェクト管理":   { label: "プロジェクト管理",   color: "#ef4444" },
-  "CRM・営業":          { label: "CRM・営業",          color: "#f59e0b" },
-  "自動化・RPA":        { label: "自動化・RPA",        color: "#f97316" },
-  "ローコード・DB":     { label: "ローコード・DB",     color: "#22a55e" },
-  "経理・HR":           { label: "経理・HR",           color: "#84cc16" },
-  "デザイン":           { label: "デザイン",           color: "#d946ef" },
-  "会議・録画":         { label: "会議・録画",         color: "#14b8a6" },
-  "スケジュール":       { label: "スケジュール",       color: "#eab308" },
-  "決済":               { label: "決済",               color: "#635bff" },
+  "AI":                 { label: "AI",                 color: "#a78bfa" },
+  "コミュニケーション": { label: "コミュニケーション", color: "#f28cb4" },
+  "ビデオ会議":         { label: "ビデオ会議",         color: "#7fb3ec" },
+  "生産性スイート":     { label: "生産性スイート",     color: "#5ec4c4" },
+  "ドキュメント管理":   { label: "ドキュメント管理",   color: "#93a0ec" },
+  "プロジェクト管理":   { label: "プロジェクト管理",   color: "#ee9090" },
+  "CRM・営業":          { label: "CRM・営業",          color: "#ecb060" },
+  "自動化・RPA":        { label: "自動化・RPA",        color: "#f0a077" },
+  "ローコード・DB":     { label: "ローコード・DB",     color: "#6cbf95" },
+  "経理・HR":           { label: "経理・HR",           color: "#9cc06c" },
+  "デザイン":           { label: "デザイン",           color: "#d894d4" },
+  "会議・録画":         { label: "会議・録画",         color: "#66c0ae" },
+  "スケジュール":       { label: "スケジュール",       color: "#d8b858" },
+  "決済":               { label: "決済",               color: "#9a94ec" },
 };
 
 const IMG_DIR = "assets/img/";
@@ -592,7 +592,7 @@ addEventListener("resize", resizeConfetti);
 resizeConfetti();
 
 function burstConfetti(x, y, count = 60, spread = 7) {
-  const colors = ["#ffd54a", "#ff5c9e", "#6ef3ff", "#8b5cf6", "#22e58e", "#ff9b3d"];
+  const colors = ["#ffd9a0", "#f9a8c9", "#a8e6cf", "#cdb4f0", "#9ad0f5", "#ffb88a"];
   for (let i = 0; i < count; i++) {
     confettiParts.push({
       x, y,
@@ -676,12 +676,14 @@ let stars = [], floaters = [];
 function initBg() {
   bgCanvas.width = innerWidth;
   bgCanvas.height = innerHeight;
+  const starColors = ["#cdb4f0", "#f9a8c9", "#ffd9a0", "#a8e6cf", "#9ad0f5"];
   stars = Array.from({ length: 70 }, () => ({
     x: Math.random() * innerWidth,
     y: Math.random() * innerHeight,
-    r: 0.6 + Math.random() * 1.6,
+    r: 1 + Math.random() * 2.2,
     phase: Math.random() * Math.PI * 2,
     speed: 0.5 + Math.random() * 1.5,
+    color: starColors[Math.floor(Math.random() * starColors.length)],
   }));
   const chars = ["🪨", "💎", "⚙️", "💾", "🖥️", "📡", "🛰️", "🔩"];
   floaters = Array.from({ length: 10 }, (_, i) => ({
@@ -699,9 +701,9 @@ initBg();
 function updateBg(now) {
   bctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
   for (const s of stars) {
-    const a = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(now / 1000 * s.speed + s.phase));
+    const a = 0.15 + 0.4 * (0.5 + 0.5 * Math.sin(now / 1000 * s.speed + s.phase));
     bctx.globalAlpha = a;
-    bctx.fillStyle = "#cfd8ff";
+    bctx.fillStyle = s.color;
     bctx.beginPath();
     bctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
     bctx.fill();
